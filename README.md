@@ -185,6 +185,15 @@ The current suite validates:
 - They focus on verifying the main public behaviors and core logic of the scripts without requiring a connected device.
 - For more complete validation, you can extend the suite with additional calibration and UI-specific tests later.
 
+## Automatic README updates
+
+A small editor script is available to keep the README file synchronized with the repository contents.
+
+- Script: [Assets/Editor/READMEAutoUpdater.cs](Assets/Editor/READMEAutoUpdater.cs)
+- Menu action: Tools > Refresh README Index
+
+This updater automatically regenerates a section in the README whenever files are added, removed, or moved under the main project folders. It is useful for keeping a live file index in the documentation without manual edits.
+
 ## Setup instructions
 
 ### Prerequisites
