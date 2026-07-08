@@ -11,7 +11,7 @@ public class SensorController : MonoBehaviour
         public Vector3 rot;
     }
 
-    public Transform targetBone; // Asignamos esto desde el editor
+    public Transform targetBone; // Assign this from the editor
     public float updateInterval = 0.1f;
 
     private List<SensorData> simulatedData;
@@ -19,7 +19,7 @@ public class SensorController : MonoBehaviour
 
     void Start()
     {
-        // Datos simulados de movimiento del brazo
+        // Simulated arm movement data
         simulatedData = new List<SensorData>
         {
             new SensorData {id = "arm_r", rot = new Vector3(0, 0, 0)},

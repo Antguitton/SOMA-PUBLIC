@@ -6,7 +6,7 @@ using System.Reflection;
 
 public class SOMA_UIGenerator : EditorWindow
 {
-    [MenuItem("Tools/Generar UI SOMA")]
+    [MenuItem("Tools/Generate SOMA UI")]
     public static void GenerateUI()
     {
         // 1. Setup Camera Background
@@ -16,7 +16,7 @@ public class SOMA_UIGenerator : EditorWindow
             mainCam.clearFlags = CameraClearFlags.SolidColor;
             mainCam.backgroundColor = new Color(0.04f, 0.03f, 0.03f, 1f); 
             Undo.RecordObject(mainCam, "Change Camera Background");
-            // Ajuste fino para centrar el maniquí a la izquierda de donde estaba. 
+            // Fine-tune the mannequin position slightly to the left.
             mainCam.transform.position = new Vector3(1.4f, 1, -4);
         }
 
@@ -307,7 +307,7 @@ public class SOMA_UIGenerator : EditorWindow
         canvasObj.AddComponent<SOMAFakeDataTester>();
         canvasObj.AddComponent<SOMATelemetryViewer>();
 
-        Debug.Log("SOMA UI Generada con estética mejorada y sin errores.");
+        Debug.Log("SOMA UI generated with the improved visual style and no errors.");
     }
 
     private static void CreateCard(Transform parent, string title, Color accentColor, string[] items, float height)

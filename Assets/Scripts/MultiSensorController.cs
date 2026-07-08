@@ -6,7 +6,7 @@ using UnityEngine;
 using UnityCoreBluetooth;
 #endif
 
-public class SentadillaSimulada : MonoBehaviour
+public class MultiSensorController : MonoBehaviour
 {
     [System.Serializable]
     public class SensorBone
@@ -14,48 +14,57 @@ public class SentadillaSimulada : MonoBehaviour
         public string sensorId; 
         public Transform bone;
         
-        [Header("🔴 AJUSTES PRINCIPALES")]
-        [Tooltip("Ajusta la rotación base para que el brazo esté en T")]
+        [Header("🔴 MAIN ADJUSTMENTS")]
+        [Tooltip("Adjust the base rotation so the arm is aligned with the T-pose.")]
         public Vector3 offsetPose = Vector3.zero;
 
-        [Header("🎯 MODO DE TRACKING")]
-        [Tooltip("NUEVO: HibridoMejorado detecta movimiento en cualquier dirección (arriba/adelante)")]
+        [Header("🎯 TRACKING MODE")]
+        [InspectorName("Tracking Mode")]
+        [Tooltip("ImprovedHybrid detects movement in any direction, including upward and forward.")]
         public TrackingMode modo = TrackingMode.Acelerometro;
 
-        [Header("🔵 INVERSIÓN DE EJES (Tiempo Real)")]
-        [Tooltip("Invierte el eje X del sensor")]
+        [Header("🔵 AXIS INVERSION (Real Time)")]
+        [InspectorName("Invert X")]
+        [Tooltip("Invert the sensor X axis.")]
         public bool invertirX = false;
         
-        [Tooltip("Invierte el eje Y del sensor")]
+        [InspectorName("Invert Y")]
+        [Tooltip("Invert the sensor Y axis.")]
         public bool invertirY = false;
         
-        [Tooltip("Invierte el eje Z del sensor")]
+        [InspectorName("Invert Z")]
+        [Tooltip("Invert the sensor Z axis.")]
         public bool invertirZ = false;
 
-        [Header("🔄 SWAP DE EJES")]
-        [Tooltip("Intercambia X con Y")]
+        [Header("🔄 AXIS SWAP")]
+        [Tooltip("Swap X and Y.")]
         public bool swapXY = false;
         
-        [Tooltip("Intercambia X con Z")]
+        [Tooltip("Swap X and Z.")]
         public bool swapXZ = false;
         
-        [Tooltip("Intercambia Y con Z")]
+        [Tooltip("Swap Y and Z.")]
         public bool swapYZ = false;
 
-        [Header("⚙️ AJUSTES DE MOVIMIENTO")]
-        [Tooltip("Multiplicador de movimiento. 1 = Real. >1 = Exagerado.")]
+        [Header("⚙️ MOVEMENT SETTINGS")]
+        [InspectorName("Movement Sensitivity")]
+        [Tooltip("Movement multiplier. 1 = real movement. >1 = exaggerated movement.")]
         [Range(0f, 5f)]
         public float sensibilidadFlexion = 1.0f;
 
-        [Header("⚙️ Sensibilidad Giroscopio (Solo modo Giroscopio)")]
+        [Header("⚙️ Gyroscope Sensitivity (Gyroscope Mode Only)")]
+        [InspectorName("Gyro Sensitivity X")]
         [Range(0f, 10f)]
         public float sensibilidadX = 1.0f;
+        [InspectorName("Gyro Sensitivity Y")]
         [Range(0f, 10f)]
         public float sensibilidadY = 1.0f;
+        [InspectorName("Gyro Sensitivity Z")]
         [Range(0f, 10f)]
         public float sensibilidadZ = 1.0f;
 
-        [Header("🎚️ Suavizado")]
+        [Header("🎚️ SMOOTHING")]
+        [InspectorName("Smoothing")]
         [Range(0.01f, 1f)]
         public float suavizado = 0.3f;
 
@@ -67,20 +76,26 @@ public class SentadillaSimulada : MonoBehaviour
 
     public enum TrackingMode
     {
-        Acelerometro,      // Usa gravedad absoluta
-        Giroscopio,        // Usa velocidad angular (bueno para rotaciones rápidas)
-        HibridoMejorado    // CORREGIDO: Usa Delta de Gravedad 3D (Arriba, Abajo, Adelante, Atrás)
+        [InspectorName("Accelerometer")]
+        Acelerometro,      // Uses absolute gravity
+        [InspectorName("Gyroscope")]
+        Giroscopio,        // Uses angular velocity (good for fast rotations)
+        [InspectorName("Improved Hybrid")]
+        HibridoMejorado    // Uses 3D gravity delta (up, down, forward, backward)
     }
 
     public List<SensorBone> sensorBones;
 
     [Header("📊 DEBUG")]
+    [InspectorName("Show Gyro Values")]
     public bool mostrarValoresGiro = false;
+    [InspectorName("Show Accelerometer Values")]
     public bool mostrarValoresAcelerometro = false;
 
-    [Header("🔴 INSTRUCCIONES")]
+    [Header("🔴 INSTRUCTIONS")]
+    [InspectorName("Instructions")]
     [TextArea(8, 14)]
-    public string instrucciones = "NUEVA CONFIGURACIÓN:\n\n1. Selecciona modo 'HibridoMejorado' para el Codo/Brazo.\n2. Pon el brazo en POSE T (o neutra).\n3. Presiona 'C' para calibrar.\n4. Mueve el brazo hacia adelante o arriba.\n\nNOTA: Si el movimiento es inverso, usa los checkbox de 'Invertir X/Y/Z'.";
+    public string instrucciones = "NEW SETUP:\n\n1. Select 'Improved Hybrid' mode for the elbow/arm.\n2. Put the arm in a T-pose (or neutral pose).\n3. Press 'C' to calibrate.\n4. Move the arm forward or upward.\n\nNOTE: If the movement is reversed, use the 'Invert X/Y/Z' checkboxes.";
 
     #if UNITY_EDITOR_OSX || UNITY_IOS
     private CoreBluetoothManager manager;
@@ -101,9 +116,9 @@ public class SentadillaSimulada : MonoBehaviour
                 sb.isCalibrated = false;
             }
         }
-        // Inicialización del diccionario vacía (ya instanciado)
+        // Dictionary initialization is already handled at declaration.
         
-        Debug.Log(">>> 🎯 LISTO: Presiona C para calibrar posiciones.");
+        Debug.Log(">>> 🎯 READY: Press C to calibrate positions.");
         
         #if UNITY_EDITOR_OSX || UNITY_IOS
         StartBluetooth();
@@ -115,7 +130,7 @@ public class SentadillaSimulada : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.C)) 
         {
             CalibrateAll();
-            Debug.Log(">>> ✅ Calibración guardada");
+            Debug.Log(">>> ✅ Calibration saved");
         }
 
         if (Input.GetKeyDown(KeyCode.R))
@@ -125,7 +140,7 @@ public class SentadillaSimulada : MonoBehaviour
                 sb.currentRotation = Quaternion.identity;
                 sb.bone.localRotation = sb.initialBoneRotation;
             }
-            Debug.Log(">>> 🔄 Rotaciones reseteadas");
+            Debug.Log(">>> 🔄 Rotations reset");
         }
 
         #if UNITY_EDITOR_OSX || UNITY_IOS
@@ -133,7 +148,7 @@ public class SentadillaSimulada : MonoBehaviour
 
         foreach (var sb in sensorBones)
         {
-            // Aislar aplicando únicamente actualizaciones de Bluetooth a los huesos seleccionados en UI:
+            // Only apply Bluetooth updates to the bones selected in the UI isolation mode.
             if (SOMAFakeDataTester.Instance != null && SOMAFakeDataTester.Instance.currentMode != SOMAFakeDataTester.TestMode.None)
             {
                 if (!SOMAFakeDataTester.Instance.ShouldAnimate(sb.sensorId)) continue;
@@ -149,7 +164,7 @@ public class SentadillaSimulada : MonoBehaviour
 
     void CalibrateAll()
     {
-        Debug.Log(">>> ♻️ RECALIBRANDO todos los sensores...");
+        Debug.Log(">>> ♻️ Recalibrating all sensors...");
         foreach (var sb in sensorBones) 
         {
             sb.isCalibrated = false;
@@ -167,7 +182,7 @@ public class SentadillaSimulada : MonoBehaviour
         {
             ApplyGyroscopeTracking(sb, data);
         }
-        else // HibridoMejorado (Corregido para 3D)
+        else // Improved hybrid (3D-corrected)
         {
             ApplyImprovedHybridTracking(sb, data);
         }
@@ -194,13 +209,13 @@ public class SentadillaSimulada : MonoBehaviour
         {
             sb.calibrationGravity = currentGravity;
             sb.isCalibrated = true;
-            Debug.Log($">>> ✅ {sb.sensorId} calibrado [ACCEL]");
+            Debug.Log($">>> ✅ {sb.sensorId} calibrated [ACCEL]");
             return;
         }
 
         Quaternion sensorDelta = Quaternion.FromToRotation(sb.calibrationGravity, currentGravity);
-        Quaternion poseBaseCorregida = sb.initialBoneRotation * Quaternion.Euler(sb.offsetPose);
-        Quaternion targetRotation = poseBaseCorregida * sensorDelta;
+        Quaternion correctedBasePose = sb.initialBoneRotation * Quaternion.Euler(sb.offsetPose);
+        Quaternion targetRotation = correctedBasePose * sensorDelta;
         
         sb.bone.localRotation = Quaternion.Slerp(sb.bone.localRotation, targetRotation, 0.1f);
     }
@@ -236,28 +251,28 @@ public class SentadillaSimulada : MonoBehaviour
         Quaternion deltaRotation = Quaternion.Euler(angularVelocity * Time.deltaTime * scaleFactor);
         sb.currentRotation *= deltaRotation;
 
-        Quaternion poseBaseCorregida = sb.initialBoneRotation * Quaternion.Euler(sb.offsetPose);
-        Quaternion targetRotation = poseBaseCorregida * sb.currentRotation;
+        Quaternion correctedBasePose = sb.initialBoneRotation * Quaternion.Euler(sb.offsetPose);
+        Quaternion targetRotation = correctedBasePose * sb.currentRotation;
         
         sb.bone.localRotation = Quaternion.Slerp(sb.bone.localRotation, targetRotation, sb.suavizado);
     }
 
     // ---------------------------------------------------------
-    //  👇 AQUÍ ESTÁ LA CORRECCIÓN PRINCIPAL 👇
+    //  Main fix lives here
     // ---------------------------------------------------------
     void ApplyImprovedHybridTracking(SensorBone sb, IMUData data)
     {
-        // 1. Obtener datos crudos
+        // 1. Read raw data
         float x = data.ax;
         float y = data.ay;
         float z = data.az;
         
-        // 2. Aplicar Swaps (Intercambio de ejes)
+        // 2. Apply axis swaps
         if (sb.swapXY) { float temp = x; x = y; y = temp; }
         if (sb.swapXZ) { float temp = x; x = z; z = temp; }
         if (sb.swapYZ) { float temp = y; y = z; z = temp; }
         
-        // 3. Aplicar Inversiones
+        // 3. Apply inversions
         if (sb.invertirX) x = -x;
         if (sb.invertirY) y = -y;
         if (sb.invertirZ) z = -z;
@@ -267,36 +282,36 @@ public class SentadillaSimulada : MonoBehaviour
 
         if (mostrarValoresAcelerometro)
         {
-            Debug.Log($"{sb.sensorId} [HIBRIDO] → x:{x:F0} y:{y:F0} z:{z:F0}");
+            Debug.Log($"{sb.sensorId} [HYBRID] -> x:{x:F0} y:{y:F0} z:{z:F0}");
         }
 
-        // 4. Calibración Inicial
+        // 4. Initial calibration
         if (!sb.isCalibrated)
         {
             sb.calibrationGravity = currentGravity;
             sb.isCalibrated = true;
-            Debug.Log($">>> ✅ {sb.sensorId} calibrado [HIBRIDO 3D]");
+            Debug.Log($">>> ✅ {sb.sensorId} calibrated [3D HYBRID]");
             return;
         }
 
-        // 5. CALCULO DE ROTACIÓN 3D (CORREGIDO)
-        // En lugar de calcular un ángulo simple, calculamos la rotación "delta" completa
-        // necesaria para ir desde la gravedad calibrada hasta la gravedad actual.
-        // Esto permite mover el brazo arriba, abajo, adelante o atrás.
+        // 5. Full 3D rotation calculation
+        // Instead of computing a single angle, compute the full delta rotation
+        // needed to move from calibrated gravity to current gravity.
+        // This allows the arm to move up, down, forward, or backward.
         Quaternion rotationDelta = Quaternion.FromToRotation(sb.calibrationGravity, currentGravity);
 
-        // 6. Aplicar Sensibilidad (Amplificar o Reducir movimiento)
+        // 6. Apply sensitivity (amplify or reduce movement)
         if (sb.sensibilidadFlexion != 1.0f)
         {
-            // SlerpUnclamped permite ir más allá del 100% (amplificar movimiento)
+            // SlerpUnclamped can go beyond 100% to amplify motion.
             rotationDelta = Quaternion.SlerpUnclamped(Quaternion.identity, rotationDelta, sb.sensibilidadFlexion);
         }
 
-        // 7. Aplicar al hueso
-        Quaternion poseBaseCorregida = sb.initialBoneRotation * Quaternion.Euler(sb.offsetPose);
+        // 7. Apply the result to the bone
+        Quaternion correctedBasePose = sb.initialBoneRotation * Quaternion.Euler(sb.offsetPose);
         
-        // Sumamos la rotación calculada a la base
-        Quaternion targetRotation = poseBaseCorregida * rotationDelta;
+        // Apply the calculated delta on top of the base pose.
+        Quaternion targetRotation = correctedBasePose * rotationDelta;
         
         sb.bone.localRotation = Quaternion.Slerp(sb.bone.localRotation, targetRotation, sb.suavizado);
     }
@@ -307,18 +322,18 @@ public class SentadillaSimulada : MonoBehaviour
         manager = CoreBluetoothManager.Shared; 
         manager.OnUpdateState((s) => { 
             if(s=="poweredOn") {
-                Debug.Log(">>> 🔵 Bluetooth encendido, escaneando...");
+                Debug.Log(">>> 🔵 Bluetooth is on, scanning...");
                 manager.StartScan(); 
             }
         }); 
         manager.OnDiscoverPeripheral((p) => { 
             if(p.name!=peripheralName) return; 
-            Debug.Log($">>> 🎯 Encontrado: {peripheralName}");
+            Debug.Log($">>> 🎯 Found: {peripheralName}");
             manager.StopScan(); 
             manager.ConnectToPeripheral(p); 
         }); 
         manager.OnConnectPeripheral((p) => {
-            Debug.Log(">>> ✅ Conectado");
+            Debug.Log(">>> ✅ Connected");
             p.discoverServices();
         }); 
         manager.OnDiscoverService((s) => s.discoverCharacteristics()); 

@@ -7,27 +7,27 @@ using UnityCoreBluetooth;
 
 public class BLE_Test : MonoBehaviour
 {
-    [Header("Configuración BLE")]
+    [Header("BLE Configuration")]
     public string peripheralName = "IMU_ARM";
 
-    [Header("UI Texts (Asignar en el Inspector)")]
-    public Text textEpaule;  // Arrastra aquí el UI Text para ch 0
-    public Text textCoude;   // Arrastra aquí el UI Text para ch 1
-    public Text textPoignet; // Arrastra aquí el UI Text para ch 2
+    [Header("UI Texts (Assign in the Inspector)")]
+    public Text textEpaule;  // Drag the UI Text here for ch 0
+    public Text textCoude;   // Drag the UI Text here for ch 1
+    public Text textPoignet; // Drag the UI Text here for ch 2
 
     private CoreBluetoothManager manager;
     private CoreBluetoothCharacteristic characteristic;
     
-    // Buffer para unir paquetes fragmentados
+    // Buffer used to merge fragmented packets
     private string dataBuffer = "";
     private object dataLock = new object();
 
-    // Array para guardar la última lectura de cada sensor (0, 1 y 2)
+    // Stores the latest reading for each sensor (0, 1, and 2)
     private IMUData[] imuSensors = new IMUData[3]; 
 
     void Start()
     {
-        // Inicializamos el array para evitar errores de nulos
+        // Initialize the array to avoid null-reference errors
         for(int i=0; i<3; i++) imuSensors[i] = new IMUData();
 
         manager = CoreBluetoothManager.Shared;
@@ -65,7 +65,7 @@ public class BLE_Test : MonoBehaviour
             }
         });
 
-        // Evento al recibir datos: Solo acumulamos en el buffer
+        // Data-receive event: just append to the buffer
         manager.OnUpdateValue((CoreBluetoothCharacteristic ch, byte[] data) =>
         {
             string receivedFragment = System.Text.Encoding.UTF8.GetString(data);
@@ -84,12 +84,12 @@ public class BLE_Test : MonoBehaviour
         UpdateUI();
     }
 
-    // Procesa el buffer buscando JSONs completos entre llaves { }
+    // Process the buffer by looking for complete JSON blocks between braces { }
     void ProcessBuffer()
     {
         string textToProcess = "";
 
-        // Extraemos el contenido del buffer de forma segura
+        // Safely extract the buffer contents
         lock (dataLock)
         {
             if (string.IsNullOrEmpty(dataBuffer)) return;
@@ -97,29 +97,29 @@ public class BLE_Test : MonoBehaviour
             dataBuffer = ""; 
         }
 
-        // Mientras encontremos una llave de cierre '}'
+        // Keep going while a closing brace '}' is present
         while (textToProcess.Contains("}"))
         {
             int endIndex = textToProcess.IndexOf("}");
             
-            // Tomamos el posible JSON hasta la llave de cierre
+            // Take the candidate JSON up to the closing brace
             string potentialJson = textToProcess.Substring(0, endIndex + 1);
             
-            // Actualizamos el texto restante para la siguiente vuelta
+            // Keep the remaining text for the next pass
             textToProcess = textToProcess.Substring(endIndex + 1);
 
-            // Buscamos dónde empieza este JSON (la última llave '{')
+            // Find where this JSON starts (the last opening brace '{')
             int startIndex = potentialJson.LastIndexOf("{");
 
             if (startIndex != -1)
             {
-                // Tenemos un bloque limpio de { a }
+                // We have a clean block from { to }
                 string cleanJson = potentialJson.Substring(startIndex);
                 ParseJson(cleanJson);
             }
         }
 
-        // Si sobra texto (un paquete incompleto que llegó al final), lo devolvemos al buffer
+        // If text remains, push the incomplete packet back into the buffer
         lock (dataLock)
         {
             dataBuffer = textToProcess + dataBuffer;
@@ -132,31 +132,31 @@ public class BLE_Test : MonoBehaviour
         {
             IMUData data = JsonUtility.FromJson<IMUData>(json);
 
-            // Verificamos que el canal sea válido (0, 1 o 2)
+            // Check that the channel is valid (0, 1, or 2)
             if (data.ch >= 0 && data.ch < 3)
             {
-                imuSensors[data.ch] = data; // Guardamos en el slot correspondiente
+                imuSensors[data.ch] = data; // Store it in the matching slot
             }
         }
         catch (Exception e)
         {
-            // Solo imprimimos si es un error real de formato, no de OCR
-            Debug.LogWarning($"Error JSON: {e.Message} en string: {json}");
+            // Only log if it is a real format error, not OCR noise
+            Debug.LogWarning($"JSON error: {e.Message} in string: {json}");
         }
     }
 
     void UpdateUI()
     {
-        // Actualizamos cada texto independientemente
-        if (textEpaule != null) textEpaule.text = FormatData("EPAULE (Hombro)", imuSensors[0]);
-        if (textCoude != null)  textCoude.text  = FormatData("COUDE (Codo)", imuSensors[1]);
-        if (textPoignet != null) textPoignet.text = FormatData("POIGNET (Muñeca)", imuSensors[2]);
+        // Update each text field independently
+        if (textEpaule != null) textEpaule.text = FormatData("SHOULDER", imuSensors[0]);
+        if (textCoude != null)  textCoude.text  = FormatData("ELBOW", imuSensors[1]);
+        if (textPoignet != null) textPoignet.text = FormatData("WRIST", imuSensors[2]);
     }
 
     string FormatData(string label, IMUData imu)
     {
-        // Si timestamp es 0, es que no hemos recibido datos para este sensor todavía
-        if (imu.ts == 0 && imu.ax == 0) return $"{label}:\nEsperando datos...";
+        // If timestamp is 0, no data has been received for this sensor yet
+        if (imu.ts == 0 && imu.ax == 0) return $"{label}:\nWaiting for data...";
 
         float accelX = imu.ax / 16384f;
         float accelY = imu.ay / 16384f;

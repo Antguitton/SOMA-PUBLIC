@@ -4,7 +4,7 @@ using UnityEngine.UI;
 public class SOMATelemetryViewer : MonoBehaviour
 {
     private GameObject telemetryPanel;
-    private SentadillaSimulada[] controllers;
+    private MultiSensorController[] controllers;
     private object tmpText;
     private Text legacyText;
     private System.Reflection.PropertyInfo tmpTextProp;
@@ -59,7 +59,7 @@ public class SOMATelemetryViewer : MonoBehaviour
         if (telemetryPanel == null || !telemetryPanel.activeInHierarchy) return;
 
         if (controllers == null || controllers.Length == 0)
-            controllers = Object.FindObjectsByType<SentadillaSimulada>(FindObjectsSortMode.None);
+            controllers = Object.FindObjectsByType<MultiSensorController>(FindObjectsSortMode.None);
 
         string bodyText = "REAL-TIME TELEMETRY\n-------------------\n\n";
         bool hasData = false;

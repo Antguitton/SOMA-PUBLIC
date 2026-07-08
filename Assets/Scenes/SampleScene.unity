@@ -414,7 +414,7 @@ GameObject:
   - component: {fileID: 104564557}
   - component: {fileID: 104564556}
   m_Layer: 5
-  m_Name: Texto_muneca
+  m_Name: Text_Wrist
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1340,10 +1340,10 @@ MonoBehaviour:
     isCalibrated: 0
   mostrarValoresGiro: 0
   mostrarValoresAcelerometro: 0
-  instrucciones: "NUEVA CONFIGURACI\xD3N:\n\n1. Selecciona modo 'HibridoMejorado'
-    para el Codo/Brazo.\n2. Pon el brazo en POSE T (o neutra).\n3. Presiona 'C' para
-    calibrar.\n4. Mueve el brazo hacia adelante o arriba.\n\nNOTA: Si el movimiento
-    es inverso, usa los checkbox de 'Invertir X/Y/Z'."
+  instrucciones: "NEW SETUP:\n\n1. Select 'Improved Hybrid' mode for the elbow/arm.\n2.
+    Put the arm in a T-pose (or neutral pose).\n3. Press 'C' to calibrate.\n4. Move
+    the arm forward or upward.\n\nNOTE: If the movement is reversed, use the 'Invert
+    X/Y/Z' checkboxes."
 --- !u!1 &260429961
 GameObject:
   m_ObjectHideFlags: 0
@@ -1685,6 +1685,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b87ecc8a6eab749078fca70bdf5d1b76, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  autoStartPreview: 1
+  previewSpeed: 1.2
+  previewAmplitude: 18
+  autoFrameMannequinOnStart: 1
   currentMode: 0
 --- !u!114 &313121851
 MonoBehaviour:
@@ -2770,7 +2774,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 45c0e69e38fde41178cc563bf345efb8, type: 3}
       propertyPath: m_LocalRotation.w
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 45c0e69e38fde41178cc563bf345efb8, type: 3}
       propertyPath: m_LocalRotation.x
@@ -2778,7 +2782,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 45c0e69e38fde41178cc563bf345efb8, type: 3}
       propertyPath: m_LocalRotation.y
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 45c0e69e38fde41178cc563bf345efb8, type: 3}
       propertyPath: m_LocalRotation.z
@@ -2790,7 +2794,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 45c0e69e38fde41178cc563bf345efb8, type: 3}
       propertyPath: m_LocalEulerAnglesHint.y
-      value: 0
+      value: 180
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 45c0e69e38fde41178cc563bf345efb8, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
@@ -7929,7 +7933,7 @@ GameObject:
   - component: {fileID: 1812279180}
   - component: {fileID: 1812279179}
   m_Layer: 5
-  m_Name: Texto_Hombro
+  m_Name: Text_Shoulder
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
